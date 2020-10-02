@@ -124,7 +124,6 @@ module.exports = {
             queue.volume = 100;
             queue.connection.dispatcher.setVolumeLogarithmic(100 / 100);
             queue.textChannel.send(`${user} 🔊 unmuted the music!`).catch(console.error);
-            queue.delete(2000);
           } else {
             queue.volume = 0;
             queue.connection.dispatcher.setVolumeLogarithmic(0);

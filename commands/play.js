@@ -2,14 +2,14 @@ const { play } = require("../include/play");
 const { YOUTUBE_API_KEY, SOUNDCLOUD_CLIENT_ID } = require("../config.json");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
-const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
+const youtube = new YouTubeAPI(process.env.YOUTUBE_API_KEY);
 const scdl = require("soundcloud-downloader");
 
 module.exports = {
   name: "play",
   cooldown: 3,
   aliases: ["p"],
-  description: "Plays audio from YouTube or Soundcloud",
+  description: "Plays audio from YouTube",
   async execute(message, args) {
     const { channel } = message.member.voice;
 

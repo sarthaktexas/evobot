@@ -4,5 +4,5 @@
   "SOUNDCLOUD_CLIENT_ID": "",
   "MAX_PLAYLIST_SIZE": 50,
   "PREFIX": "kosmos ",
-  "PRUNING": false
+  "PRUNING": true
 }

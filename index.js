@@ -8,7 +8,7 @@ const { TOKEN, PREFIX } = require("./config.json");
 
 const client = new Client({ disableMentions: "everyone" });
 
-client.login(TOKEN);
+client.login(process.env.DISCORD_TOKEN);
 client.commands = new Collection();
 client.prefix = PREFIX;
 client.queue = new Map();

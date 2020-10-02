@@ -99,7 +99,8 @@ module.exports = {
           reaction.users.remove(user).catch(console.error);
           if (!canModifyQueue(member)) return;
           queue.connection.dispatcher.end();
-          queue.textChannel.send(`${user} ⏩ skipped the song`).delete({ timeout: 3000 }).catch(console.error);
+          queue.textChannel.send(`${user} ⏩ skipped the song`).catch(console.error);
+          queue.delete({ timeout: 3000 });
           collector.stop();
           break;
 

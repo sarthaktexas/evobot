@@ -108,8 +108,8 @@ module.exports = {
           let spotifyPlaylistRegex = RegExp(/https:\/\/open.spotify.com\/playlist\/(.+)\?(.+)/gi);
           let spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
           playlist = await spotifyApi.getPlaylistTracks(spotifyPlaylistId);
-          console.log(playlist.body.items);
           playlist.body.items.forEach((track) => {
+            console.log(track);
             console.log(track.name, track.preview_url, track.duration_ms);
           });
           videos = playlist.body.items.map(track => ({

@@ -17,6 +17,7 @@ module.exports = {
     let streamType = song.url.includes("youtube.com") ? "opus" : "ogg/opus";
 
     try {
+      console.log(song.url);
       if (song.url.includes("youtube.com")) {
         stream = await ytdlDiscord(song.url, { highWaterMark: 1 << 25 });
       } else if (song.url.includes("soundcloud.com")) {
@@ -34,6 +35,8 @@ module.exports = {
           );
           streamType = "unknown";
         }
+      } else {
+        stream = await ytdlDiscord(song.url, { highWaterMark: 1 << 25 });
       }
     } catch (error) {
       if (queue) {

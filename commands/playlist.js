@@ -102,38 +102,46 @@ module.exports = {
           spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
           playlist = await spotifyApi.getAlbum(spotifyAlbumId);
           let youtubeFetchError;
-          playlist.body.tracks.items.forEach(track => {
-            youtube.searchVideos(`${track.name} ${track.artists[0].name}`, 1).then(data => {
-              let url = `https://youtube.com/watch?v=${data[0].id}`;
+          playlist.body.tracks.items.forEach(async track => {
+            let songInfo = await youtube.searchVideos(`${track.name} ${track.artists[0].name}`, 1).catch(err => youtubeFetchError = err);
+            if (youtubeFetchError) {
+              //youtubeFetchError = true;
+              console.log(youtubeFetchError);
+            } else {
+              let url = `https://youtube.com/watch?v=${songInfo[0].id}`;
               videos.push({
                 title: track.name,
                 url: url,
                 duration: track.duration_ms / 1000
               });
-            }).catch(err => youtubeFetchError = err);
+            }
           });
           if (youtubeFetchError) {
-            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason);
+            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason + '`');
           }
         } else if (url.includes('/playlist/')) {
           message.channel.send('⌛ fetching the playlist...');
           let spotifyPlaylistRegex = RegExp(/https:\/\/open.spotify.com\/playlist\/(.+)\?(.+)/gi);
           spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
           playlist = await spotifyApi.getPlaylist(spotifyPlaylistId);
-          let youtubeFetchError;
-          playlist.body.tracks.items.forEach(track => {
-            youtube.searchVideos(`${track.track.name} ${track.track.artists[0].name}`, 1).then(link => {
-              let url = `https://youtube.com/watch?v=${data[0].id}`;
+          let youtubeFetchError = false;
+          playlist.body.tracks.items.forEach(async track => {
+            let songInfo = await youtube.searchVideos(`${track.track.name} ${track.track.artists[0].name}`, 1).catch(err => youtubeFetchError = err);
+            if (youtubeFetchError) {
+              //youtubeFetchError = true;
+              console.log(youtubeFetchError);
+            } else {
+              let url = `https://youtube.com/watch?v=${songInfo[0].id}`;
               videos.push({
                 title: track.track.name,
                 url: url,
                 duration: track.track.duration_ms / 1000
               });
-            }).catch(err => youtubeFetchError = err);
+              console.log(videos);
+            }
           });
           if (youtubeFetchError) {
-            console.log(youtubeFetchError);
-            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason);
+            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason + '`');
           }
         }
       } catch (error) {

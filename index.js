@@ -1,6 +1,7 @@
 /**
  * Module Imports
  */
+require('dotenv').config()
 const { Client, Collection } = require("discord.js");
 const { readdirSync } = require("fs");
 const { join } = require("path");
@@ -22,6 +23,7 @@ client.on("ready", () => {
   console.log(`${client.user.username} ready!`);
   client.user.setActivity(`srtk.me | Type ${PREFIX}help to learn more`, { type: 'LISTENING' });
 });
+client.on('debug', console.log);
 client.on("warn", (info) => console.log(info));
 client.on("error", console.error);
 

@@ -1,9 +1,23 @@
+require('dotenv').config()
 const { MessageEmbed } = require("discord.js");
 const { play } = require("../include/play");
 const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE, SOUNDCLOUD_CLIENT_ID } = require("../config.json");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(process.env.YOUTUBE_API_KEY);
 const scdl = require("soundcloud-downloader")
+/*var SpotifyWebApi = require('spotify-web-api-node');
+var spotifyApi = new SpotifyWebApi({
+  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  redirectUri: 'https://srtk.me'
+});
+
+spotifyApi.clientCredentialsGrant()
+  .then(function (data) {
+    spotifyApi.setAccessToken(data.body['access_token']);
+  }, function (err) {
+    console.log('Something went wrong when retrieving an access token', err.message);
+  });*/
 
 module.exports = {
   name: "playlist",
@@ -51,8 +65,12 @@ module.exports = {
 
     if (urlValid) {
       try {
-        playlist = await youtube.getPlaylist(url, { part: "snippet" });
-        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, { part: "snippet" });
+        playlist = await youtube.getPlaylist(url, {
+          part: "snippet"
+        });
+        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, {
+          part: "snippet"
+        });
       } catch (error) {
         console.error(error);
         return message.reply("Playlist not found :(").catch(console.error);
@@ -67,11 +85,51 @@ module.exports = {
           duration: track.duration / 1000
         }))
       }
-    } else {
+    } /*else if (url.includes("https://open.spotify.com/album") || url.includes("https://open.spotify.com/playlist")) {
       try {
-        const results = await youtube.searchPlaylists(search, 1, { part: "snippet" });
+        spotifyApi.clientCredentialsGrant()
+          .then(function (data) {
+            spotifyApi.setAccessToken(data.body['access_token']);
+          }, function (err) {
+            console.log('Something went wrong when retrieving an access token', err.message);
+          });
+        if (url.includes('/album/')) {
+          message.channel.send('⌛ fetching the album...');
+          let spotifyAlbumRegex = RegExp(/https:\/\/open.spotify.com\/album\/(.+)\?(.+)/gi);
+          let spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
+          playlist = await spotifyApi.getAlbumTracks(spotifyAlbumId);
+          videos = playlist.body.items.map(track => ({
+            title: track.name,
+            url: track.preview_url,
+            duration: track.duration_ms / 1000
+          }));
+        } else if (url.includes('/playlist/')) {
+          message.channel.send('⌛ fetching the playlist...');
+          let spotifyPlaylistRegex = RegExp(/https:\/\/open.spotify.com\/playlist\/(.+)\?(.+)/gi);
+          let spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
+          playlist = await spotifyApi.getPlaylistTracks(spotifyPlaylistId);
+          playlist.body.items.forEach((track) => {
+            console.log(track.name, track.preview_url, track.duration_ms);
+          });
+          videos = playlist.body.items.map(track => ({
+            title: track.name,
+            url: track.preview_url,
+            duration: track.duration_ms / 1000
+          }));
+        }
+      } catch (error) {
+        console.error(error);
+        return message.reply("I can't find a playlist or album with that link.").catch(console.error);
+      }
+    }*/ else {
+      try {
+        const results = await youtube.searchPlaylists(search, 1, {
+          part: "snippet"
+        });
         playlist = results[0];
-        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, { part: "snippet" });
+        videos = await playlist.getVideos(MAX_PLAYLIST_SIZE || 10, {
+          part: "snippet"
+        });
       } catch (error) {
         console.error(error);
         return message.reply("Playlist not found :(").catch(console.error);
@@ -89,12 +147,15 @@ module.exports = {
         serverQueue.songs.push(song);
         if (!PRUNING)
           message.channel
-            .send(`✅ **${song.title}** has been added to the queue by ${message.author}`)
-            .catch(console.error);
+          .send(`✅ **${song.title}** has been added to the queue by ${message.author}`)
+          .catch(console.error);
       } else {
         queueConstruct.songs.push(song);
       }
     });
+
+    console.log(videos);
+    console.log(playlist);
 
     let playlistEmbed = new MessageEmbed()
       .setTitle(`${playlist.title}`)
@@ -106,7 +167,7 @@ module.exports = {
       playlistEmbed.setDescription(queueConstruct.songs.map((song, index) => `${index + 1}. ${song.title}`));
       if (playlistEmbed.description.length >= 2048)
         playlistEmbed.description =
-          playlistEmbed.description.substr(0, 2007) + "\nPlaylist larger than character limit...";
+        playlistEmbed.description.substr(0, 2007) + "\nPlaylist larger than character limit...";
     }
 
     message.channel.send(`${message.author} Started a playlist`, playlistEmbed);

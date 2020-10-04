@@ -1,5 +1,11 @@
-const { play } = require("../include/play");
-const { YOUTUBE_API_KEY, SOUNDCLOUD_CLIENT_ID } = require("../config.json");
+require('dotenv').config()
+const {
+  play
+} = require("../include/play");
+const {
+  YOUTUBE_API_KEY,
+  SOUNDCLOUD_CLIENT_ID
+} = require("../config.json");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(process.env.YOUTUBE_API_KEY);
@@ -11,7 +17,9 @@ module.exports = {
   aliases: ["p"],
   description: "Plays audio from YouTube",
   async execute(message, args) {
-    const { channel } = message.member.voice;
+    const {
+      channel
+    } = message.member.voice;
 
     const serverQueue = message.client.queue.get(message.guild.id);
     if (!channel) return message.reply("You need to join a voice channel first!").catch(console.error);
@@ -35,13 +43,15 @@ module.exports = {
     const scRegex = /^https?:\/\/(soundcloud\.com)\/(.*)$/;
     const url = args[0];
     const urlValid = videoPattern.test(args[0]);
-
+    
     // Start the playlist if playlist url was provided
     if (!videoPattern.test(args[0]) && playlistPattern.test(args[0])) {
       return message.client.commands.get("playlist").execute(message, args);
     } else if (scdl.isValidUrl(url) && url.includes("/sets/")) {
       return message.client.commands.get("playlist").execute(message, args);
-    }
+    }/* else if (url.includes("https://open.spotify.com/album/") || url.includes("https://open.spotify.com/playlist/")) {
+      return message.client.commands.get("playlist").execute(message, args);
+    }*/
 
     const queueConstruct = {
       textChannel: message.channel,

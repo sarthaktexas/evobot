@@ -23,7 +23,6 @@ client.on("ready", () => {
   console.log(`${client.user.username} ready!`);
   client.user.setActivity(`srtk.me | Type ${PREFIX}help to learn more`, { type: 'LISTENING' });
 });
-client.on('debug', console.log);
 client.on("warn", (info) => console.log(info));
 client.on("error", console.error);
 

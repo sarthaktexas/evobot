@@ -6,6 +6,7 @@ const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(process.env.YOUTUBE_API_KEY);
 const scdl = require("soundcloud-downloader")
 var SpotifyWebApi = require('spotify-web-api-node');
+const { link } = require('ffmpeg-static');
 var spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
@@ -101,16 +102,18 @@ module.exports = {
           spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
           playlist = await spotifyApi.getAlbum(spotifyAlbumId);
           let youtubeFetchError;
-          playlist.body.tracks.items.forEach(async (track) => {
-            let songResults = await youtube.searchVideos(`${track.name} ${track.artists[0].name}`, 1).catch(err => youtubeFetchError = true);
-            videos.push({
-              title: track.name,
-              url: url,
-              duration: track.duration_ms / 1000
-            });
+          playlist.body.tracks.items.forEach(track => {
+            youtube.searchVideos(`${track.name} ${track.artists[0].name}`, 1).then(data => {
+              let url = `https://youtube.com/watch?v=${data[0].id}`;
+              videos.push({
+                title: track.name,
+                url: url,
+                duration: track.duration_ms / 1000
+              });
+            }).catch(err => youtubeFetchError = err);
           });
           if (youtubeFetchError) {
-            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + err.code + ': ' + err.errors[0].reason);
+            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason);
           }
         } else if (url.includes('/playlist/')) {
           message.channel.send('⌛ fetching the playlist...');
@@ -118,18 +121,20 @@ module.exports = {
           spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
           playlist = await spotifyApi.getPlaylist(spotifyPlaylistId);
           let youtubeFetchError;
-          playlist.body.tracks.items.forEach(async (track) => {
-            let songResults = await youtube.searchVideos(`${track.track.name} ${track.track.artists[0].name}`, 1).catch(err => youtubeFetchError = true);
-            let url = `https://youtube.com/watch?v=${songResults[0].id}`;
-            videos.push({
-              title: track.track.name,
-              url: url,
-              duration: track.track.duration_ms / 1000
-            });
+          playlist.body.tracks.items.forEach(track => {
+            youtube.searchVideos(`${track.track.name} ${track.track.artists[0].name}`, 1).then(link => {
+              let url = `https://youtube.com/watch?v=${data[0].id}`;
+              videos.push({
+                title: track.track.name,
+                url: url,
+                duration: track.track.duration_ms / 1000
+              });
+            }).catch(err => youtubeFetchError = err);
           });
-        }
-        if (youtubeFetchError) {
-          message.channel.send('Couldn\'t fetch Youtube videos because Error `' + err.code + ': ' + err.errors[0].reason);
+          if (youtubeFetchError) {
+            console.log(youtubeFetchError);
+            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + youtubeFetchError.code + ': ' + youtubeFetchError.errors[0].reason);
+          }
         }
       } catch (error) {
         console.error(error);

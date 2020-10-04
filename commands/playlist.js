@@ -99,11 +99,11 @@ module.exports = {
           message.channel.send('⌛ fetching the album...');
           let spotifyAlbumRegex = RegExp(/https:\/\/open.spotify.com\/album\/(.+)\?(.+)/gi);
           spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
-          playlist = await spotifyApi.getAlbumTracks(spotifyAlbumId);
-          videos = playlist.body.items.map(track => ({
-            title: track.track.name,
-            url: track.track.preview_url,
-            duration: track.track.duration_ms / 1000
+          playlist = await spotifyApi.getAlbum(spotifyAlbumId);
+          videos = playlist.body.tracks.items.map(track => ({
+            title: track.name,
+            url: track.preview_url,
+            duration: track.duration_ms / 1000
           }));
         } else if (url.includes('/playlist/')) {
           message.channel.send('⌛ fetching the playlist...');
@@ -154,19 +154,24 @@ module.exports = {
 
     let playlistEmbed;
 
+    /**
+     * Capitalize first letter in string.
+     */
+    String.prototype.capitalize = function() {
+      return this.charAt(0).toUpperCase() + this.slice(1)
+    }
+
     if (spotifyAlbumId) {
-      let albumInfo = spotifyApi.getAlbum(spotifyAlbumId);
       playlistEmbed = new MessageEmbed()
       .setTitle(playlist.body.name)
       .setURL(playlist.body.href)
-      .setDescription(playlist.body.description)
+      .setDescription(`${playlist.body.artists[0].name} • ${playlist.body.album_type.capitalize()} • ${playlist.body.release_date.substring(0, 4)} • ${playlist.body.total_tracks} songs.`)
       .setThumbnail(playlist.body.images[0].url)
       .setColor("#F8AA2A")
       .setTimestamp();
     } else if (spotifyPlaylistId) {
-      let playlistInfo = spotifyApi.getPlaylist(spotifyPlaylistId);
       playlistEmbed = new MessageEmbed()
-      .setTitle(`${playlist.body.name}`)
+      .setTitle(playlist.body.name)
       .setURL(playlist.body.href)
       .setDescription(playlist.body.description)
       .setThumbnail(playlist.body.images[0].url)

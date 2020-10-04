@@ -49,9 +49,9 @@ module.exports = {
       return message.client.commands.get("playlist").execute(message, args);
     } else if (scdl.isValidUrl(url) && url.includes("/sets/")) {
       return message.client.commands.get("playlist").execute(message, args);
-    }/* else if (url.includes("https://open.spotify.com/album/") || url.includes("https://open.spotify.com/playlist/")) {
+    } else if (url.includes("https://open.spotify.com/album/") || url.includes("https://open.spotify.com/playlist/")) {
       return message.client.commands.get("playlist").execute(message, args);
-    }*/
+    }
 
     const queueConstruct = {
       textChannel: message.channel,

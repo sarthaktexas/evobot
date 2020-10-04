@@ -5,7 +5,7 @@ const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE, SOUNDCLOUD_CLIENT_ID } = require("..
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(process.env.YOUTUBE_API_KEY);
 const scdl = require("soundcloud-downloader")
-/*var SpotifyWebApi = require('spotify-web-api-node');
+var SpotifyWebApi = require('spotify-web-api-node');
 var spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
@@ -17,7 +17,7 @@ spotifyApi.clientCredentialsGrant()
     spotifyApi.setAccessToken(data.body['access_token']);
   }, function (err) {
     console.log('Something went wrong when retrieving an access token', err.message);
-  });*/
+  });
 
 module.exports = {
   name: "playlist",
@@ -85,7 +85,7 @@ module.exports = {
           duration: track.duration / 1000
         }))
       }
-    } /*else if (url.includes("https://open.spotify.com/album") || url.includes("https://open.spotify.com/playlist")) {
+    } else if (url.includes("https://open.spotify.com/album") || url.includes("https://open.spotify.com/playlist")) {
       try {
         spotifyApi.clientCredentialsGrant()
           .then(function (data) {
@@ -121,7 +121,7 @@ module.exports = {
         console.error(error);
         return message.reply("I can't find a playlist or album with that link.").catch(console.error);
       }
-    }*/ else {
+    } else {
       try {
         const results = await youtube.searchPlaylists(search, 1, {
           part: "snippet"

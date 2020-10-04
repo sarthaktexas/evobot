@@ -13,11 +13,11 @@ module.exports = {
       return queue.textChannel.send("🚫 Music queue ended.").catch(console.error);
     }
 
+    console.log(song.url);
     let stream = null;
     let streamType = song.url.includes("youtube.com") ? "opus" : "ogg/opus";
 
     try {
-      console.log(song.url);
       if (song.url.includes("youtube.com")) {
         stream = await ytdlDiscord(song.url, { highWaterMark: 1 << 25 });
       } else if (song.url.includes("soundcloud.com")) {

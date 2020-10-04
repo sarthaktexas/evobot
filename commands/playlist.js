@@ -100,21 +100,32 @@ module.exports = {
           let spotifyAlbumRegex = RegExp(/https:\/\/open.spotify.com\/album\/(.+)\?(.+)/gi);
           spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
           playlist = await spotifyApi.getAlbum(spotifyAlbumId);
-          videos = playlist.body.tracks.items.map(track => ({
-            title: track.name,
-            url: track.preview_url,
-            duration: track.duration_ms / 1000
-          }));
+          let youtubeFetchError;
+          playlist.body.tracks.items.forEach(async (track) => {
+            let songResults = await youtube.searchVideos(`${track.name} ${track.artists[0].name}`, 1).catch(err => youtubeFetchError = true);
+            videos.push({
+              title: track.name,
+              url: url,
+              duration: track.duration_ms / 1000
+            });
+          });
+          if (youtubeFetchError) {
+            message.channel.send('Couldn\'t fetch Youtube videos because Error `' + err.code + ': ' + err.errors[0].reason);
+          }
         } else if (url.includes('/playlist/')) {
           message.channel.send('⌛ fetching the playlist...');
           let spotifyPlaylistRegex = RegExp(/https:\/\/open.spotify.com\/playlist\/(.+)\?(.+)/gi);
           spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
           playlist = await spotifyApi.getPlaylist(spotifyPlaylistId);
-          videos = playlist.body.tracks.items.map(track => ({
-            title: track.track.name,
-            url: track.track.preview_url,
-            duration: track.track.duration_ms / 1000
-          }));
+          playlist.body.tracks.items.forEach(async (track) => {
+            let songResults = await youtube.searchVideos(`${track.track.name} ${track.track.artists[0].name}`, 1);
+            let url = `https://youtube.com/watch?v=${songResults[0].id}`;
+            videos.push({
+              title: track.track.name,
+              url: url,
+              duration: track.track.duration_ms / 1000
+            });
+          });
         }
       } catch (error) {
         console.error(error);

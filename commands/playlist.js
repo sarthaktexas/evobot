@@ -60,6 +60,8 @@ module.exports = {
     };
 
     let song = null;
+    let spotifyAlbumId = null;
+    let spotifyPlaylistId = null;
     let playlist = null;
     let videos = [];
 
@@ -96,26 +98,22 @@ module.exports = {
         if (url.includes('/album/')) {
           message.channel.send('⌛ fetching the album...');
           let spotifyAlbumRegex = RegExp(/https:\/\/open.spotify.com\/album\/(.+)\?(.+)/gi);
-          let spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
+          spotifyAlbumId = spotifyAlbumRegex.exec(url)[1];
           playlist = await spotifyApi.getAlbumTracks(spotifyAlbumId);
           videos = playlist.body.items.map(track => ({
-            title: track.name,
-            url: track.preview_url,
-            duration: track.duration_ms / 1000
+            title: track.track.name,
+            url: track.track.preview_url,
+            duration: track.track.duration_ms / 1000
           }));
         } else if (url.includes('/playlist/')) {
           message.channel.send('⌛ fetching the playlist...');
           let spotifyPlaylistRegex = RegExp(/https:\/\/open.spotify.com\/playlist\/(.+)\?(.+)/gi);
-          let spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
-          playlist = await spotifyApi.getPlaylistTracks(spotifyPlaylistId);
-          playlist.body.items.forEach((track) => {
-            console.log(track);
-            console.log(track.name, track.preview_url, track.duration_ms);
-          });
-          videos = playlist.body.items.map(track => ({
-            title: track.name,
-            url: track.preview_url,
-            duration: track.duration_ms / 1000
+          spotifyPlaylistId = spotifyPlaylistRegex.exec(url)[1];
+          playlist = await spotifyApi.getPlaylist(spotifyPlaylistId);
+          videos = playlist.body.tracks.items.map(track => ({
+            title: track.track.name,
+            url: track.track.preview_url,
+            duration: track.track.duration_ms / 1000
           }));
         }
       } catch (error) {
@@ -143,7 +141,6 @@ module.exports = {
         url: video.url,
         duration: video.durationSeconds
       };
-      console.log(song);
       if (serverQueue) {
         serverQueue.songs.push(song);
         if (!PRUNING)
@@ -155,14 +152,33 @@ module.exports = {
       }
     });
 
-    console.log(videos);
-    console.log(playlist);
+    let playlistEmbed;
 
-    let playlistEmbed = new MessageEmbed()
+    if (spotifyAlbumId) {
+      let albumInfo = spotifyApi.getAlbum(spotifyAlbumId);
+      playlistEmbed = new MessageEmbed()
+      .setTitle(playlist.body.name)
+      .setURL(playlist.body.href)
+      .setDescription(playlist.body.description)
+      .setThumbnail(playlist.body.images[0].url)
+      .setColor("#F8AA2A")
+      .setTimestamp();
+    } else if (spotifyPlaylistId) {
+      let playlistInfo = spotifyApi.getPlaylist(spotifyPlaylistId);
+      playlistEmbed = new MessageEmbed()
+      .setTitle(`${playlist.body.name}`)
+      .setURL(playlist.body.href)
+      .setDescription(playlist.body.description)
+      .setThumbnail(playlist.body.images[0].url)
+      .setColor("#F8AA2A")
+      .setTimestamp();
+    } else {
+      playlistEmbed = new MessageEmbed()
       .setTitle(`${playlist.title}`)
       .setURL(playlist.url)
       .setColor("#F8AA2A")
       .setTimestamp();
+    }
 
     if (!PRUNING) {
       playlistEmbed.setDescription(queueConstruct.songs.map((song, index) => `${index + 1}. ${song.title}`));

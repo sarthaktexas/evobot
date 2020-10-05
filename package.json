@@ -1,13 +1,13 @@
 {
-  "name": "evobot",
-  "version": "0.7.0",
+  "name": "Kosmos Music Bot",
+  "version": "1.0.0",
   "description": "Discord music bot built with discord.js",
   "main": "index.js",
-  "author": "Erit Islami <eritislami@gmail.com>",
+  "author": "Sarthak Mohanty <sarthaktexas@gmail.com>",
   "private": true,
-  "homepage": "https://github.com/eritislami/evobot",
-  "repository": "github:eritislami/evobot",
-  "bugs": "https://github.com/eritislami/evobot/issues",
+  "homepage": "https://github.com/sarthaktexas/kosmos-discord-music-bot",
+  "repository": "github:sarthaktexas/kosmos-discord-music-bot",
+  "bugs": "https://github.com/sarthaktexas/kosmos-discord-music-bot/issues",
   "engines": {
     "node": ">=12.0.0"
   },

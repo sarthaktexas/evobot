@@ -137,7 +137,6 @@ module.exports = {
                 url: url,
                 duration: track.track.duration_ms / 1000
               });
-              console.log(videos);
             }
           });
           if (youtubeFetchError) {

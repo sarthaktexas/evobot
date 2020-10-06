@@ -57,3 +57,4 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
+.env

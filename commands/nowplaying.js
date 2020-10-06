@@ -11,8 +11,6 @@ module.exports = {
     const seek = (queue.connection.dispatcher.streamTime - queue.connection.dispatcher.pausedTime) / 1000;
     const left = song.duration - seek;
 
-    console.log(song);
-
     let nowPlaying = new MessageEmbed()
       .setTitle("Now playing")
       .setDescription(`${song.title}\n${song.url}`)

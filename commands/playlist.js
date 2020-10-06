@@ -79,10 +79,11 @@ module.exports = {
     }
 
     videos.forEach((video) => {
+      songInfo = await ytdl.getInfo(`https://youtube.com/watch?v=${video.id}`);
       song = {
         title: video.title,
         url: video.url,
-        duration: video.durationSeconds
+        duration: songInfo.videoDetails.lengthSeconds
       };
 
       if (serverQueue) {

@@ -80,7 +80,7 @@ module.exports = {
     }
 
     videos.forEach(async (video) => {
-      songInfo = await ytdl.getInfo(video.id);
+      songInfo = await ytdl.getInfo(`https://youtube.com/watch?v=${video.id}`);
       song = {
         title: video.title,
         url: video.url,

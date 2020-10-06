@@ -79,7 +79,7 @@ module.exports = {
       }
     }
 
-    videos.forEach((video) => {
+    videos.forEach(async (video) => {
       songInfo = await ytdl.getInfo(video.id);
       song = {
         title: video.title,

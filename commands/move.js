@@ -13,7 +13,9 @@ module.exports = {
     if (!args.length) return message.reply(`Usage: ${message.client.prefix}move <Queue Number>`);
     if (isNaN(args[0])) return message.reply(`Usage: ${message.client.prefix}move <Queue Number>`);
 
-    const song = queue.songs.move(args[0] - 1, 1);
-    queue.textChannel.send(`${message.author} 🚚 moved **${queue.songs[args[0]].title}** to the top of the queue.`);
+    let songMoved = queue.songs[args[0] - 1];
+
+    queue.songs.move(args[0] - 1, 1);
+    queue.textChannel.send(`${message.author} 🚚 moved **${songMoved.title}** to the top of the queue.`);
   }
 };

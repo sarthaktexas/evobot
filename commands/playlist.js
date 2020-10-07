@@ -84,7 +84,7 @@ module.exports = {
       song = {
         title: video.title,
         url: video.url,
-        duration: video.durationSeconds || songInfo.videoDetails.lengthSeconds
+        duration: songInfo.videoDetails.lengthSeconds || video.durationSeconds
       };
 
       if (serverQueue) {

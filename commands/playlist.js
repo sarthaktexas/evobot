@@ -80,19 +80,19 @@ module.exports = {
     }
 
     videos.forEach((video) => {
-      songInfo = ytdl.getInfo(`https://youtube.com/watch?v=${video.id}`).then(songInfo => {
+      /*songInfo = ytdl.getInfo(`https://youtube.com/watch?v=${video.id}`).then(songInfo => {
         song = {
           title: video.title,
           url: video.url,
           duration: songInfo.videoDetails.lengthSeconds
         }
-      }).catch(err => {
+      }).catch(err => {*/
         song = {
           title: video.title,
           url: video.url,
           duration: video.durationSeconds
         }
-      })
+      //})
 
       if (serverQueue) {
         serverQueue.songs.push(song);

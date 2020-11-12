@@ -1,6 +1,7 @@
 /**
  * Module Imports
  */
+require('dotenv').config()
 const { Client, Collection } = require("discord.js");
 const { readdirSync } = require("fs");
 const { join } = require("path");

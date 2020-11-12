@@ -15,6 +15,8 @@
     "@discordjs/opus": "^0.3.2",
     "array.prototype.move": "0.0.4",
     "discord.js": "^12.0.1",
+    "discord.js-minesweeper": "^1.0.6",
+    "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.2.3",
     "lyrics-finder": "^21.0.5",
     "simple-youtube-api": "^5.1.1",
